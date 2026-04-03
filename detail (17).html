@@ -1,0 +1,17 @@
+{% macro render_field(field, placeholder='') %}
+<div class="mb-3">
+  {{ field.label(class="form-label") }}
+  {% if field.type == 'TextAreaField' %}
+    {{ field(class="form-control", rows=3, placeholder=placeholder) }}
+  {% elif field.type == 'SelectField' %}
+    {{ field(class="form-select") }}
+  {% else %}
+    {{ field(class="form-control", placeholder=placeholder) }}
+  {% endif %}
+  {% if field.errors %}
+    {% for e in field.errors %}
+      <div class="invalid-feedback d-block">{{ e }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endmacro %}

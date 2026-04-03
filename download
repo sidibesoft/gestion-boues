@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Eaux / Boues — GBV{% endblock %}
+{% block page_title %}Eaux / Boues{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><i class="bi bi-droplet me-2 text-success"></i>Eaux / Boues</h5>
+  <a href="{{ url_for('eaux.nouveau') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Nouveau</a>
+</div>
+<div class="card table-card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>ID</th><th>Type</th><th>Volume (m³)</th><th>Contamination</th><th>Fosse</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for e in eaux %}
+        <tr>
+          <td>{{ e.id }}</td><td class="fw-semibold">{{ e.type_eaux }}</td><td>{{ e.volumetrique or '—' }}</td>
+          <td>
+            {% if e.niveau_contamination == 'Faible' %}<span class="badge badge-faible">Faible</span>
+            {% elif e.niveau_contamination == 'Moyen' %}<span class="badge badge-moyen">Moyen</span>
+            {% elif e.niveau_contamination %}
+              <span class="badge badge-eleve">{{ e.niveau_contamination }}</span>
+            {% else %}—{% endif %}
+          </td>
+          <td><a href="{{ url_for('fosses.detail', id=e.fosse_id) }}" class="text-success">Fosse #{{ e.fosse_id }}</a></td>
+          <td>
+            <a href="{{ url_for('eaux.modifier', id=e.id) }}" class="btn btn-sm btn-outline-secondary me-1"><i class="bi bi-pencil"></i></a>
+            <form method="post" action="{{ url_for('eaux.supprimer', id=e.id) }}" class="d-inline" onsubmit="return confirm('Confirmer ?')">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">Aucune eau. <a href="{{ url_for('eaux.nouveau') }}">Ajouter.</a></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

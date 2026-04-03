@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_macros.html" import render_field %}
+{% block title %}{{ titre }} — GBV{% endblock %}
+{% block page_title %}{{ titre }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-6">
+  <div class="form-card">
+    <h5 class="mb-4"><i class="bi bi-house me-2 text-success"></i>{{ titre }}</h5>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      {{ render_field(form.contact, placeholder="Ex: +225 07 00 00 00") }}
+      {{ render_field(form.email, placeholder="email@exemple.com") }}
+      <div class="row">
+        <div class="col-6">{{ render_field(form.latitude, placeholder="5.3600") }}</div>
+        <div class="col-6">{{ render_field(form.longitude, placeholder="-3.9969") }}</div>
+      </div>
+      {{ render_field(form.commune_id) }}
+      <hr>
+      <div class="d-flex gap-2">
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('menages.index') }}" class="btn btn-outline-secondary">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div></div>
+{% endblock %}

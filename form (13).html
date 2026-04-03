@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord — GBV{% endblock %}
+{% block page_title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+  {% set cards = [
+    ("communes",    "bi-geo-alt",        "Communes",             "communes.index",   "#1a6b3c"),
+    ("stations",    "bi-building",       "Stations",             "stations.index",   "#0d6efd"),
+    ("fosses",      "bi-circle-square",  "Fosses septiques",     "fosses.index",     "#6f42c1"),
+    ("eaux",        "bi-droplet",        "Eaux / Boues",         "eaux.index",       "#0dcaf0"),
+    ("vehicules",   "bi-truck",          "Véhicules",            "vehicules.index",  "#fd7e14"),
+    ("menages",     "bi-house",          "Ménages",              "menages.index",    "#20c997"),
+    ("chauffeurs",  "bi-person-badge",   "Chauffeurs",           "chauffeurs.index", "#d63384"),
+    ("personnels",  "bi-people",         "Personnel",            "personnels.index", "#6610f2"),
+    ("equipements", "bi-tools",          "Équipements",          "equipements.index","#198754"),
+  ] %}
+  {% for key, icon, label, endpoint, color in cards %}
+  <div class="col-6 col-md-4 col-xl-3">
+    <a href="{{ url_for(endpoint) }}" class="text-decoration-none">
+      <div class="card stat-card h-100" style="border-left-color:{{ color }}">
+        <div class="card-body d-flex align-items-center gap-3 py-3">
+          <div class="icon" style="background:{{ color }}18; color:{{ color }}">
+            <i class="bi {{ icon }}"></i>
+          </div>
+          <div>
+            <div class="stat-number" style="color:{{ color }}">{{ stats[key] }}</div>
+            <div class="text-muted" style="font-size:.8rem">{{ label }}</div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row g-3">
+  <!-- Dernières fosses -->
+  <div class="col-lg-7">
+    <div class="card table-card">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <span class="fw-semibold"><i class="bi bi-circle-square me-2 text-success"></i>Dernières fosses enregistrées</span>
+        <a href="{{ url_for('fosses.nouveau') }}" class="btn btn-sm btn-primary">
+          <i class="bi bi-plus-lg"></i> Nouvelle
+        </a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr>
+            <th>#</th><th>Dimensions (m)</th><th>Volume (m²)</th>
+            <th>Ménages</th><th>Stations</th><th>Eaux</th>
+          </tr></thead>
+          <tbody>
+            {% for f in fosses %}
+            <tr>
+              <td><a href="{{ url_for('fosses.detail', id=f.id) }}" class="fw-semibold text-success">#{{ f.id }}</a></td>
+              <td>{{ f.longueur_p or '—' }} × {{ f.largeur_f or '—' }}</td>
+              <td>{{ f.volume_theorique or '—' }}</td>
+              <td><span class="badge bg-secondary">{{ f.menages|list|length }}</span></td>
+              <td><span class="badge bg-primary">{{ f.stations|list|length }}</span></td>
+              <td><span class="badge bg-info text-dark">{{ f.eaux.all()|length }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center text-muted py-4">Aucune fosse enregistrée.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accès rapides -->
+  <div class="col-lg-5">
+    <div class="card table-card">
+      <div class="card-header bg-white py-3">
+        <span class="fw-semibold"><i class="bi bi-lightning-charge me-2 text-warning"></i>Accès rapides</span>
+      </div>
+      <div class="card-body">
+        {% set actions = [
+          ("Ajouter une commune",          "communes.nouveau",    "bi-geo-alt",       "success"),
+          ("Ajouter une station",          "stations.nouveau",    "bi-building",      "primary"),
+          ("Enregistrer une fosse",        "fosses.nouveau",      "bi-circle-square", "purple"),
+          ("Enregistrer une eau/boue",     "eaux.nouveau",        "bi-droplet",       "info"),
+          ("Ajouter un ménage",            "menages.nouveau",     "bi-house",         "teal"),
+          ("Ajouter un véhicule",          "vehicules.nouveau",   "bi-truck",         "warning"),
+          ("Ajouter un chauffeur",         "chauffeurs.nouveau",  "bi-person-badge",  "danger"),
+        ] %}
+        <div class="d-grid gap-2">
+          {% for label, endpoint, icon, color in actions %}
+          <a href="{{ url_for(endpoint) }}"
+             class="btn btn-outline-{{ color }} btn-sm text-start d-flex align-items-center gap-2">
+            <i class="bi {{ icon }}"></i> {{ label }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
